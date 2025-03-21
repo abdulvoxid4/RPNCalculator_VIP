@@ -9,7 +9,7 @@ import Foundation
 
 protocol CalculatorPresenterProtocol {
     
-    func presnetResult(value: String)
+    func presnetResult(value: String, expression: String?)
     
 }
 
@@ -18,9 +18,9 @@ final class CalculatorPresenter: CalculatorPresenterProtocol {
     
     weak var view: CalculatorViewProtocol?
     
-    func presnetResult(value: String) {
+    func presnetResult(value: String, expression: String?) {
         
-        view?.showResult(value: value)
+        view?.showResult(value: value, expression: expression)
     }
     
     

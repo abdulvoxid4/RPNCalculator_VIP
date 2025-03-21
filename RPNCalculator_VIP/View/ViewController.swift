@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CalculatorViewProtocol: AnyObject {
-    func showResult(value: String)
+    func showResult(value: String, expression: String?)
 }
 
 class ViewController: UIViewController {
@@ -151,8 +151,13 @@ class ViewController: UIViewController {
 
 extension ViewController: CalculatorViewProtocol {
     
-    func showResult(value: String) {
+    func showResult(value: String, expression: String?) {
         stackLabel.text = value
+        if let expression {
+            self.expressionLabel.text = expression
+        } else {
+            self.expressionLabel.text = ""
+        }
     }
     
     

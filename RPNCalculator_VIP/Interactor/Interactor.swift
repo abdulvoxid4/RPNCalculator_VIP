@@ -32,7 +32,7 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
         
        let processedRes = rpnDataService.directTo(currentInput: currentInput, title: val)
         
-        presenter.presnetResult(value: processedRes)
+        presenter.presnetResult(value: processedRes.0, expression: processedRes.1)
     }
     
 }

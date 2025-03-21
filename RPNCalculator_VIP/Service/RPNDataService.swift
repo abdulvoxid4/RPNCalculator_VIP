@@ -7,14 +7,8 @@
 
 protocol RPNDataServiceProtocol {
     
-    func directTo(currentInput: String, title: CalculatorButtonsEnum) -> String
-    
-//    func buttonPressed(currentInput: String, title: CalculatorButtonsEnum)
-//    
-//    func calculate(_ input: String) -> Double?
-    
-    
-    
+    func directTo(currentInput: String, title: CalculatorButtonsEnum) -> (String,String?)
+
 }
 
 final class RPNDataService: RPNDataServiceProtocol {
@@ -22,13 +16,13 @@ final class RPNDataService: RPNDataServiceProtocol {
     typealias CB = CalculatorButtonsEnum
     
     
-    func directTo(currentInput: String, title: CalculatorButtonsEnum) -> String {
+    func directTo(currentInput: String, title: CalculatorButtonsEnum) -> (String, String?) {
         if title == .equal {
             let postfixInput = infinixToPostfix(expression: currentInput)
-            return calculate(postfixInput ?? "B") ?? "A"
+            return ((calculate(postfixInput ?? "B") ?? "A"), currentInput)
             
-        }else {
-            return buttonPressed(currentInput: currentInput, title: title)
+        } else {
+            return (buttonPressed(currentInput: currentInput, title: title),nil)
         }
     }
     
@@ -50,65 +44,64 @@ final class RPNDataService: RPNDataServiceProtocol {
                 expression = ""
             }
 
-            switch title {
-           // Zero case
-            case .zero:
-                return zeroHandler(
-                    lastNumber: lastNumber,
-                    lastChar: lastChar,
-                    lastNumberWithoutBrackets: lastNumberWithoutBrackets,
-                    newCurrentInput: newCurrentInput)
-                
+        switch title {
+            // Zero case
+        case .zero:
+            return zeroHandler(
+                lastNumber: lastNumber,
+                lastChar: lastChar,
+                lastNumberWithoutBrackets: lastNumberWithoutBrackets,
+                newCurrentInput: newCurrentInput)
+            
             // Backspace case
-            case .backspace:
-              return backspaceHandler(newCurrentInput: newCurrentInput)
+        case .backspace:
+            return backspaceHandler(newCurrentInput: newCurrentInput)
             
             // All Clear, AC case
-            case .allClear:
-               
+        case .allClear:
+            return CB.zero.rawValue
             
             // Dot case
-            case .dot:
-                
-               return dotHandler(lastNumber: lastNumber,
-                           lastChar: lastChar,
-                           operators: operators,
-                           newCurrentInput: newCurrentInput
-                )
-                
+        case .dot:
+            
+            return dotHandler(lastNumber: lastNumber,
+                              lastChar: lastChar,
+                              operators: operators,
+                              newCurrentInput: newCurrentInput
+            )
+            
             // Operators case
-            case .plus, .multiplyX, .divide, .minus:
-               return operatorsHandler(lastChar: lastChar,
-                                 operators: operators,
-                                 title: title,
-                                 newCurrentInput: newCurrentInput
-                )
-                
+        case .plus, .multiplyX, .divide, .minus:
+            return operatorsHandler(lastChar: lastChar,
+                                    operators: operators,
+                                    title: title,
+                                    newCurrentInput: newCurrentInput
+            )
+            
             // Equal case, =
-//            case .equal:
-//                equalHandler(operatorsWithBrackets: operatorsWithBrackets, newCurrentInput: newCurrentInput, newExpression: expression)
+            //            case .equal:
+            //                equalHandler(operatorsWithBrackets: operatorsWithBrackets, newCurrentInput: newCurrentInput, newExpression: expression)
             
             // Open parenthesis case
-            case .openParenthesis:
-               return openParenthesisHandler(newCurrentInput: newCurrentInput)
-
+        case .openParenthesis:
+            return openParenthesisHandler(newCurrentInput: newCurrentInput)
+            
             // Close parenthesis case
-            case .closeParenthesis:
-              return closeParenthesisHandler(lastChar: lastChar,
-                                        operators: operators,
-                                        newCurrentInput: newCurrentInput)
+        case .closeParenthesis:
+            return closeParenthesisHandler(lastChar: lastChar,
+                                           operators: operators,
+                                           newCurrentInput: newCurrentInput)
             
             // Numbers case
-            default:
-                return numbersHandler(
-                    lastNumber: lastNumber,
-                    lastChar: lastChar,
-                    title: title,
-                    operators: operators,
-                    lastNumberWithoutBrackets: lastNumberWithoutBrackets,
-                    newCurrentInput: newCurrentInput)
-            }
-        return "Error"
+        default:
+            return numbersHandler(
+                lastNumber: lastNumber,
+                lastChar: lastChar,
+                title: title,
+                operators: operators,
+                lastNumberWithoutBrackets: lastNumberWithoutBrackets,
+                newCurrentInput: newCurrentInput)
+        }
        
     }
    
@@ -369,10 +362,10 @@ extension RPNDataService {
         return currentInput
     }
     
-    func allClearHandler(newCurrentInput: String, newExpression: String) -> (String, String) {
-        var currentInput = newCurrentInput
-        var expression = newExpression
-       // return (currentInput = "0", expression = "")
-    }
+//    func allClearHandler(newCurrentInput: String, newExpression: String) -> (String, String) {
+//        var currentInput = newCurrentInput
+//        var expression = newExpression
+//        return (currentInput = "0", expression = "")
+//    }
     
 }
