@@ -18,15 +18,16 @@ final class RPNDataService: RPNDataServiceProtocol {
     
     func directTo(currentInput: String, title: CalculatorButtonsEnum) -> (String, String?) {
         if title == .equal {
-            let postfixInput = infinixToPostfix(expression: currentInput)
-            return ((calculate(postfixInput ?? "B") ?? "A"), currentInput)
             
+            let better = currentInput.tillNumber ?? currentInput
+            
+            let postfixInput = infinixToPostfix(expression: better)
+            let result = (calculate(postfixInput ?? "Error1") ?? "Error2")
+            return (formatResult(result: result), better)
         } else {
-            return (buttonPressed(currentInput: currentInput, title: title),nil)
+            return (buttonPressed(currentInput: currentInput, title: title), nil)
         }
     }
-    
-    
     
     private func buttonPressed(currentInput: String, title: CB) -> String {
         
@@ -63,7 +64,6 @@ final class RPNDataService: RPNDataServiceProtocol {
             
             // Dot case
         case .dot:
-            
             return dotHandler(lastNumber: lastNumber,
                               lastChar: lastChar,
                               operators: operators,
@@ -78,10 +78,6 @@ final class RPNDataService: RPNDataServiceProtocol {
                                     newCurrentInput: newCurrentInput
             )
             
-            // Equal case, =
-            //            case .equal:
-            //                equalHandler(operatorsWithBrackets: operatorsWithBrackets, newCurrentInput: newCurrentInput, newExpression: expression)
-            
             // Open parenthesis case
         case .openParenthesis:
             return openParenthesisHandler(newCurrentInput: newCurrentInput)
@@ -91,6 +87,10 @@ final class RPNDataService: RPNDataServiceProtocol {
             return closeParenthesisHandler(lastChar: lastChar,
                                            operators: operators,
                                            newCurrentInput: newCurrentInput)
+       // case .equal:
+//            equalHandler(operatorsWithBrackets: operatorsWithBrackets,
+//                                newCurrentInput: newCurrentInput,
+//                                newExpression: expression)
             
             // Numbers case
         default:
@@ -104,8 +104,6 @@ final class RPNDataService: RPNDataServiceProtocol {
         }
        
     }
-   
-    
     
     // Evaluates and calculates the RPN expression
     private func calculate(_ input: String) -> String? {
@@ -130,19 +128,20 @@ final class RPNDataService: RPNDataServiceProtocol {
                 case CB.plus.rawValue: stack.append(a + b)
                 case CB.minus.rawValue: stack.append(a - b)
                 case CB.multiplyX.rawValue: stack.append(a * b)
-                case  CB.divideDrop.rawValue: if b != 0 { stack.append(a / b) } else { return nil }
+                case  CB.divide.rawValue: if b != 0 { stack.append(a / b) } else { return nil }
                 default: return nil
                 }
             }
         }
-        var result = stack.last
+        let result = stack.last
+        print("Result \(result)")
         return result?.description
     }
     
     // Converts infix expression to postfix (RPN)
     private func infinixToPostfix(expression: String) -> String? {
-        //let precedence: [Character: Int] = ["+": 1, "-": 1, "*": 2, "/": 2] // Level of operator
-        let precedence: [Character: Int] = ["+": 1, "-": 1, "×": 2, "/": 2] // Level of operator
+       // let precedence: [Character: Int] = ["+": 1, "-": 1, "*": 2, "/": 2] // Level of operator
+        let precedence: [Character: Int] = ["+": 1, "-": 1, "×": 2, "÷": 2] // Level of operator
         var output: [String] = []
         var operators: [Character] = []
         var numberBuffer = ""
@@ -155,7 +154,7 @@ final class RPNDataService: RPNDataServiceProtocol {
                     output.append(numberBuffer)
                     numberBuffer = ""
                 }
-                
+                    
                 if char == "-" && (index == 0 || expression[expression.index(expression.startIndex, offsetBy: index - 1)] == "(") {
                     numberBuffer.append(char)
                 } else if char == "(" {
@@ -186,27 +185,44 @@ final class RPNDataService: RPNDataServiceProtocol {
         return output.joined(separator: " ")
     }
     
-    private func formatResult(result: Double) -> String {
-    
-        if result == result.rounded(.down) {
-            if result >= Double(Int.min) && result <= Double(Int.max) {
-                return String(Int(result))
+    private func formatResult(result: String) -> String {
+        guard let doubleResult = Double(result) else {
+            return result
+        }
+        
+        if doubleResult == doubleResult.rounded(.down) {
+            if doubleResult >= Double(Int.min) && doubleResult <= Double(Int.max) {
+                return String(Int(doubleResult))
             } else {
-                return String(format: "%g", result)
+                return String(format: "%g", doubleResult) // Return as Double without decimal places
             }
         } else {
-           return String(format: "%.\(7)f", result)
-                .replacingOccurrences(of: "\\.?0+$", with: "", options: .regularExpression)
+            // Format the double value with 7 decimal places and remove trailing zeros
+            let formattedString = String(format: "%.7f", doubleResult)
+            return formattedString.replacingOccurrences(of: "\\.?0+$", with: "", options: .regularExpression)
         }
-
-        
-//        if let intResult = Int(exactly: result) {
-//            return String(intResult)
-//        }
-//
-//        return String(result)
-        
     }
+    
+//    private func equalHandler(operatorsWithBrackets: Set<Character>, newCurrentInput: String, newExpression: String) -> (String, String) {
+//        var currentInput = newCurrentInput
+//        var expression = newExpression
+//        expression = currentInput
+//        
+////        while let lastChar = currentInput.last, operatorsWithBrackets.contains(lastChar) {
+////            currentInput.removeLast()
+////        }
+////        
+//        print("Current Input: \(currentInput)")
+//        if
+//            let postfix = infinixToPostfix(expression: currentInput),
+//            let result = calculate(postfix)
+//        {
+//            currentInput = formatResult(result: Double(result) ?? 0.0)
+//        } else {
+//            currentInput = "Error"
+//        }
+//        return (currentInput,expression)
+//    }
 }
 
 extension RPNDataService {
@@ -283,36 +299,11 @@ extension RPNDataService {
             }
         }
         currentInput += title.rawValue
-        print(currentInput)
+      //  print(currentInput)
         return currentInput
     }
     
-    func equalHandler(operatorsWithBrackets: Set<Character>, newCurrentInput: String, newExpression: String) -> String {
-        var currentInput = newCurrentInput
-        var expression = newExpression
-        expression = currentInput
-        
-        while let lastChar = currentInput.last, operatorsWithBrackets.contains(lastChar) {
-            currentInput.removeLast()
-        }
-        
-        
-        let infixExpression = currentInput
-//            .replacingOccurrences(of: "×", with: "*")
-//            .replacingOccurrences(of: "÷", with: "/")
-        
-        
-        print("Current Input: \(currentInput)")
-        if
-            let postfix = infinixToPostfix(expression: infixExpression),
-            let result = calculate(postfix)
-        {
-            currentInput = formatResult(result: Double(result) ?? 0.0)
-        } else {
-            currentInput = "Error"
-        }
-        return currentInput
-    }
+  
     
     func openParenthesisHandler(newCurrentInput: String) -> String {
         var currentInput = newCurrentInput
@@ -353,19 +344,13 @@ extension RPNDataService {
     
     func backspaceHandler(newCurrentInput: String) -> String {
         var currentInput = newCurrentInput
-        //  if currentInput.isEmpty ? "0" : String(currentInput.removeLast())
-        if currentInput.isEmpty {
+        
+        if currentInput.count == 1 {
             currentInput = "0"
         } else {
             currentInput.removeLast()
         }
         return currentInput
     }
-    
-//    func allClearHandler(newCurrentInput: String, newExpression: String) -> (String, String) {
-//        var currentInput = newCurrentInput
-//        var expression = newExpression
-//        return (currentInput = "0", expression = "")
-//    }
     
 }

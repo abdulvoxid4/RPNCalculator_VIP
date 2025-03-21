@@ -19,7 +19,7 @@ class ViewController: UIViewController {
     private let stackLabel: CalculatorLabel = {
         let label = CalculatorLabel(
             text: "0",
-            textColor: .white,
+            textColor: .labelColor,
             font: .boldSystemFont(ofSize: 60)
         )
         return label
@@ -39,6 +39,11 @@ class ViewController: UIViewController {
         scrollView.showsHorizontalScrollIndicator = false
         return scrollView
     }()
+    
+//    private let historyButton: CalculatorButton = {
+//        let button = CalculatorButton(title: .allClear, imageName: "s" )
+        
+ //   }()
     
     private let portraitStructure: [[CalculatorButtonsEnum]] = [
         [.backspace, .openParenthesis, .closeParenthesis , .divide],
@@ -68,12 +73,12 @@ class ViewController: UIViewController {
     
     // MARK: - UI Setup
     private func setupUI() {
-        view.backgroundColor = .black
-        setupButtons()
-        setupLabels()
+        view.backgroundColor = .viewBackgroundColor
+        setupButtonStack()
+        setupUIElments()
     }
     
-    private func setupButtons() {
+    private func setupButtonStack() {
         let buttonStack = CalculatorStackView(axis: .vertical)
         view.addSubview(buttonStack)
         
@@ -88,59 +93,44 @@ class ViewController: UIViewController {
             }
             buttonStack.addArrangedSubview(rowStack)
         }
-        
-        NSLayoutConstraint.activate([
-            buttonStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            buttonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            buttonStack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            buttonStack.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height / 2)
-        ])
+    
+        buttonStack.setConstraints(.left, view: view, constant: 30)
+        buttonStack.setConstraints(.right, view: view, constant: 30)
+        buttonStack.setConstraints(.bottomLessThan, view: view, constant: 20)
+        buttonStack.setConstraints(.height, constant: ScreenSize.height / 2)
     }
     
-    private func setupLabels() {
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+    private func setupUIElments() {
         view.addSubview(scrollView)
         
-        NSLayoutConstraint.activate([
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -UIScreen.main.bounds.height / 2 - 20),
-            scrollView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height / 10)
-        ])
+        scrollView.setConstraints(.left, view: view, constant: 30)
+        scrollView.setConstraints(.right, view: view, constant: 30)
+        scrollView.setConstraints(.bottomSafe, view: view, constant: -ScreenSize.height / 2 - 20)
+        scrollView.setConstraints(.height, constant: ScreenSize.height / 10)
         
-        stackLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(stackLabel)
         
-        NSLayoutConstraint.activate([
-            stackLabel.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            stackLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            stackLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            stackLabel.leadingAnchor.constraint(greaterThanOrEqualTo: scrollView.leadingAnchor),
-            stackLabel.widthAnchor.constraint(greaterThanOrEqualTo: scrollView.widthAnchor)
-        ])
+        stackLabel.setConstraints(.top, view: scrollView)
+        stackLabel.setConstraints(.bottom, view: scrollView)
+        stackLabel.setConstraints(.right, view: scrollView)
+        stackLabel.setConstraints(.leftGreaterThan, view: scrollView)
+        stackLabel.setConstraints(.widthGreaterThan, view: scrollView)
         
         view.addSubview(expressionLabel)
         
-        NSLayoutConstraint.activate([
-            expressionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            expressionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            expressionLabel.bottomAnchor.constraint(equalTo: stackLabel.topAnchor, constant: -5),
-         //   expressionLabel.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height / 15)
-        ])
+        expressionLabel.setConstraints(.left, view: view, constant: 30)
+        expressionLabel.setConstraints(.right, view: view, constant: 30)
+        expressionLabel.setConstraints(.bottomToTop, view: stackLabel, constant: 5)
+        
     }
     
     // MARK: - Button Action
     @objc private func buttonTapped(_ sender: UIButton) {
         guard let title = sender.currentTitle, !title.isEmpty else { return }
-      //  viewModel.handleButtonTap(CalculatorButtonsEnum(rawValue: title) ?? .allClear)
-      //  updateDisplay()
         
         let titleBtn = CalculatorButtonsEnum(rawValue: title) ?? .allClear
-        
-        print(titleBtn)
-        
+            
         guard let txtstr = stackLabel.text else {return}
-        
         interactor.processResult(val: titleBtn, currentInput: txtstr)
     }
     
@@ -158,7 +148,21 @@ extension ViewController: CalculatorViewProtocol {
         } else {
             self.expressionLabel.text = ""
         }
+        updateDisplay()
     }
     
+    private func updateDisplay() {
+        guard let currentInput = stackLabel.text else { return }
+        
+        let textSize = (currentInput as NSString).size(withAttributes: [.font: stackLabel.font as Any])
+        let labelWidth = max(textSize.width, scrollView.frame.width)
+
+        stackLabel.frame.size.width = labelWidth
+        
+        scrollView.contentSize = CGSize(width: labelWidth, height: scrollView.frame.height)
+        
+        let maxOffsetX = max(labelWidth - scrollView.frame.width, 0)
+        scrollView.setContentOffset(CGPoint(x: maxOffsetX, y: 0), animated: false)
+    }
     
 }
