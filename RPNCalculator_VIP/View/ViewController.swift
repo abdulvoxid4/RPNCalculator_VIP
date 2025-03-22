@@ -9,6 +9,7 @@ import UIKit
 
 protocol CalculatorViewProtocol: AnyObject {
     func showResult(value: String, expression: String?)
+    func setStackView(from structure: [[CalculatorButtonsEnum]], isRemoveAllEmentsFromStack: Bool)
 }
 
 class ViewController: UIViewController {
@@ -17,6 +18,8 @@ class ViewController: UIViewController {
     var router: CalculatorRouter?
     
     // MARK: - UI Components
+    private let buttonsStackView = CalculatorStackView(axis: .vertical)
+    
     private let stackLabel: CalculatorLabel = {
         let label = CalculatorLabel(
             text: "0",
@@ -47,26 +50,17 @@ class ViewController: UIViewController {
         historyButton.tintColor = .orange
         return historyButton
     }()
-    
-    private let portraitStructure: [[CalculatorButtonsEnum]] = [
-        [.backspace, .openParenthesis, .closeParenthesis , .divide],
-        [.seven, .eight, .nine, .multiplyX],
-        [.four, .five, .six, .minus],
-        [.one, .two, .three, .plus],
-        [.allClear, .zero, .dot, .equal]
-    ]
-    
-    private let landscapeStructure: [[CalculatorButtonsEnum]] = [
-        [.seven, .eight, .nine, .backspace, .divide],
-        [.four, .five, .six, .openParenthesis, .multiplyX],
-        [.one, .two, .three, .closeParenthesis, .minus],
-        [.allClear, .zero, .dot, .equal, .plus]
-    ]
-    
+
+    // MARK: - Lifecycle functions
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        let isLandscapeMode = UIDevice.current.orientation.isLandscape
+        interactor.didChangedAppOrientation(to: isLandscapeMode ? .landscape : .portrait)
     }
     
     init(interactor: CalculatorInteractorProtocol) {
@@ -77,63 +71,61 @@ class ViewController: UIViewController {
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .viewBackgroundColor
-        setupButtonStack()
-        setupUIElments()
+        view.addSubview(historyButton)
+        view.addSubview(expressionLabel)
+        view.addSubview(scrollView)
+        scrollView.addSubview(stackLabel)
+        view.addSubview(buttonsStackView)
+
+        setupConstraints()
+        
+        interactor.firstViewDidLoad()
         
         historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
 
     }
     
-    private func setupButtonStack() {
-        let buttonStack = CalculatorStackView(axis: .vertical)
-        view.addSubview(buttonStack)
-        
-        for row in portraitStructure {
-            let rowStack = CalculatorStackView(axis: .horizontal)
-            
-            for title in row {
-                let button = CalculatorButton(title: title)
-                button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
-                
-                rowStack.addArrangedSubview(button)
-            }
-            buttonStack.addArrangedSubview(rowStack)
-        }
-    
-        buttonStack.setConstraints(.left, view: view, constant: 30)
-        buttonStack.setConstraints(.right, view: view, constant: 30)
-        buttonStack.setConstraints(.bottomLessThan, view: view, constant: 20)
-        buttonStack.setConstraints(.height, constant: ScreenSize.height / 2)
-    }
-    
-    private func setupUIElments() {
-        view.addSubview(historyButton)
-        
-        historyButton.setConstraints(.top, view: view, constant: 70)
+    private func setupConstraints() {
+        historyButton.setConstraints(.top, view: view, constant: 90)
         historyButton.setConstraints(.left, view: view, constant: 30)
         
-        view.addSubview(scrollView)
+        expressionLabel.setConstraints(.left, view: view, constant: 30)
+        expressionLabel.setConstraints(.right, view: view, constant: 30)
+        expressionLabel.setConstraints(.bottomToTop, view: stackLabel, constant: 5)
         
         scrollView.setConstraints(.left, view: view, constant: 30)
         scrollView.setConstraints(.right, view: view, constant: 30)
         scrollView.setConstraints(.bottomSafe, view: view, constant: -ScreenSize.height / 2 - 20)
         scrollView.setConstraints(.height, constant: ScreenSize.height / 10)
         
-        scrollView.addSubview(stackLabel)
-        
         stackLabel.setConstraints(.top, view: scrollView)
         stackLabel.setConstraints(.bottom, view: scrollView)
         stackLabel.setConstraints(.right, view: scrollView)
         stackLabel.setConstraints(.leftGreaterThan, view: scrollView)
         stackLabel.setConstraints(.widthGreaterThan, view: scrollView)
-        
-        view.addSubview(expressionLabel)
-        
-        expressionLabel.setConstraints(.left, view: view, constant: 30)
-        expressionLabel.setConstraints(.right, view: view, constant: 30)
-        expressionLabel.setConstraints(.bottomToTop, view: stackLabel, constant: 5)
+    
+        buttonsStackView.setConstraints(.left, view: view, constant: 30)
+        buttonsStackView.setConstraints(.right, view: view, constant: 30)
+        buttonsStackView.setConstraints(.bottomLessThan, view: view, constant: 20)
+        buttonsStackView.setConstraints(.height, constant: ScreenSize.height / 2 )
         
     }
+    
+    private func resetFullView() {
+        buttonsStackView.arrangedSubviews.forEach {
+            $0.removeFromSuperview()
+        }
+        
+        for subview in view.subviews {
+            subview.removeConstraints(subview.constraints)
+        }
+        for subview in scrollView.subviews {
+            subview.removeConstraints(subview.constraints)
+        }
+        
+        setupConstraints()
+    }
+
     
     // MARK: - Button Action
     @objc private func buttonTapped(_ sender: UIButton) {
@@ -158,6 +150,25 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: CalculatorViewProtocol {
+   
+    func setStackView(from structure: [[CalculatorButtonsEnum]], isRemoveAllEmentsFromStack: Bool) {
+        if isRemoveAllEmentsFromStack == true {
+            resetFullView()
+        }
+        
+        for row in structure {
+            let rowStack = CalculatorStackView(axis: .horizontal)
+            
+            for title in row {
+                let button = CalculatorButton(title: title)
+                button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+                
+                rowStack.addArrangedSubview(button)
+            }
+            buttonsStackView.addArrangedSubview(rowStack)
+        }
+    }
+    
     
     func showResult(value: String, expression: String?) {
         stackLabel.text = value

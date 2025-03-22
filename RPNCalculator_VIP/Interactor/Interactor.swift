@@ -10,17 +10,18 @@ import Foundation
 protocol CalculatorInteractorProtocol {
     
     func processResult(val: CalculatorButtonsEnum, currentInput: String)
+    func didChangedAppOrientation(to orientation: AppOrientation)
+    func firstViewDidLoad()
 }
 
 
 final class CalculatorInteractor: CalculatorInteractorProtocol {
-    
-    
+    // MARK: - Dependencies
     let rpnDataService = RPNDataService()
     
     var presenter: CalculatorPresenterProtocol
     
-    
+    // MARK: - Init
     init(presenter: CalculatorPresenterProtocol) {
         self.presenter = presenter
     }
@@ -32,7 +33,15 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
         
        let processedRes = rpnDataService.directTo(currentInput: currentInput, title: val)
         
-        presenter.presnetResult(value: processedRes.0, expression: processedRes.1)
+        presenter.presentResult(value: processedRes.0, expression: processedRes.1)
+    }
+    
+    func didChangedAppOrientation(to orientation: AppOrientation) {
+        presenter.changePosition(to: orientation)
+    }
+    
+    func firstViewDidLoad() {
+        presenter.setStackView()
     }
     
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 enum AppOrientation {
-    case landscale
+    case landscape
     case portrait
 }
