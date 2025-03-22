@@ -28,6 +28,23 @@ final class Assembly: AssemblyProtocol {
         
         presenter.view = view
         
+        let historyRouter = HistoryRouter()
+        
+        let calculatorRouter = CalculatorRouter()
+        
+       // let historyViewController = HistoryViewController()
+        
+        view.router = calculatorRouter
+        
+        calculatorRouter.calculatorViewController = view
+        
+       // historyViewController.router = historyRouter
+        
+       // historyRouter.historyViewController = historyViewController
+        
+       
+        
+        
         
         return view
     }

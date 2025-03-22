@@ -58,22 +58,23 @@ extension UIView {
         
         case .centerY:
             self.centerYAnchor.constraint(equalTo: targetView.centerYAnchor, constant: constant).isActive = true
+       
         case .bottomLessThan:
             self.bottomAnchor.constraint(lessThanOrEqualTo: targetView.safeAreaLayoutGuide.bottomAnchor, constant: -constant).isActive = true
+        
         case .leftGreaterThan:
             self.leadingAnchor.constraint(greaterThanOrEqualTo: targetView.leadingAnchor).isActive = true
+       
         case .widthGreaterThan:
             self.widthAnchor.constraint(greaterThanOrEqualTo: targetView.widthAnchor).isActive = true
+        
         case .bottomSafe:
             self.bottomAnchor.constraint(equalTo: targetView.safeAreaLayoutGuide.bottomAnchor, constant: constant).isActive = true
+        
         case .bottomToTop:
             self.bottomAnchor.constraint(equalTo: targetView.topAnchor, constant: -constant).isActive = true
         }
     }
 }
 
-
-//             stackLabel.leadingAnchor.constraint(greaterThanOrEqualTo: scrollView.leadingAnchor),
-// stackLabel.widthAnchor.constraint(greaterThanOrEqualTo: scrollView.widthAnchor)
-// scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -UIScreen.main.bounds.height / 2 - 20),
 

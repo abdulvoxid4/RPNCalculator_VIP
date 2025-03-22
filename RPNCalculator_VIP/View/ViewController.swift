@@ -14,6 +14,7 @@ protocol CalculatorViewProtocol: AnyObject {
 class ViewController: UIViewController {
     // MARK: - Properties
     var interactor: CalculatorInteractorProtocol
+    var router: CalculatorRouter?
     
     // MARK: - UI Components
     private let stackLabel: CalculatorLabel = {
@@ -40,10 +41,12 @@ class ViewController: UIViewController {
         return scrollView
     }()
     
-//    private let historyButton: CalculatorButton = {
-//        let button = CalculatorButton(title: .allClear, imageName: "s" )
-        
- //   }()
+    private let historyButton: UIButton = {
+        let historyButton = UIButton(type: .system)
+        historyButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        historyButton.tintColor = .orange
+        return historyButton
+    }()
     
     private let portraitStructure: [[CalculatorButtonsEnum]] = [
         [.backspace, .openParenthesis, .closeParenthesis , .divide],
@@ -76,6 +79,9 @@ class ViewController: UIViewController {
         view.backgroundColor = .viewBackgroundColor
         setupButtonStack()
         setupUIElments()
+        
+        historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
+
     }
     
     private func setupButtonStack() {
@@ -101,6 +107,11 @@ class ViewController: UIViewController {
     }
     
     private func setupUIElments() {
+        view.addSubview(historyButton)
+        
+        historyButton.setConstraints(.top, view: view, constant: 70)
+        historyButton.setConstraints(.left, view: view, constant: 30)
+        
         view.addSubview(scrollView)
         
         scrollView.setConstraints(.left, view: view, constant: 30)
@@ -133,6 +144,13 @@ class ViewController: UIViewController {
         guard let txtstr = stackLabel.text else {return}
         interactor.processResult(val: titleBtn, currentInput: txtstr)
     }
+    
+    @objc private func historyButtonTapped() {
+        
+        print("Inside button")
+        
+        router?.navigateToHistory()  // Calls the router to show HistoryVC
+       }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

@@ -6,12 +6,11 @@
 //
 
 extension String {
-
-    var tillNumber: String? {
+    var removeUntilLastNumber: String? {
         
         var str = self
         
-        while let lastChar = str.last, ["+", "-", "×", "÷", "(", ")"].contains(lastChar) {
+        while let lastChar = str.last, ["+", "-", "×", "÷", "("].contains(lastChar) {
             if str.isEmpty {return nil}
             str.removeLast()
         }

@@ -19,7 +19,7 @@ final class RPNDataService: RPNDataServiceProtocol {
     func directTo(currentInput: String, title: CalculatorButtonsEnum) -> (String, String?) {
         if title == .equal {
             
-            let better = currentInput.tillNumber ?? currentInput
+            let better = currentInput.removeUntilLastNumber ?? currentInput
             
             let postfixInput = infinixToPostfix(expression: better)
             let result = (calculate(postfixInput ?? "Error1") ?? "Error2")
@@ -203,26 +203,6 @@ final class RPNDataService: RPNDataServiceProtocol {
         }
     }
     
-//    private func equalHandler(operatorsWithBrackets: Set<Character>, newCurrentInput: String, newExpression: String) -> (String, String) {
-//        var currentInput = newCurrentInput
-//        var expression = newExpression
-//        expression = currentInput
-//        
-////        while let lastChar = currentInput.last, operatorsWithBrackets.contains(lastChar) {
-////            currentInput.removeLast()
-////        }
-////        
-//        print("Current Input: \(currentInput)")
-//        if
-//            let postfix = infinixToPostfix(expression: currentInput),
-//            let result = calculate(postfix)
-//        {
-//            currentInput = formatResult(result: Double(result) ?? 0.0)
-//        } else {
-//            currentInput = "Error"
-//        }
-//        return (currentInput,expression)
-//    }
 }
 
 extension RPNDataService {
