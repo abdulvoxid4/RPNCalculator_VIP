@@ -63,8 +63,9 @@ class ViewController: UIViewController {
         interactor.didChangedAppOrientation(to: isLandscapeMode ? .landscape : .portrait)
     }
     
-    init(interactor: CalculatorInteractorProtocol) {
+    init(interactor: CalculatorInteractorProtocol, router: CalculatorRouter) {
         self.interactor = interactor
+        self.router = router
         super.init(nibName: nil, bundle: nil)
     }
     

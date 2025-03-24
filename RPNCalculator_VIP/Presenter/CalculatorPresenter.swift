@@ -12,12 +12,11 @@ protocol CalculatorPresenterProtocol {
     func presentResult(value: String, expression: String?)
     func setStackView()
     func changePosition(to orientation: AppOrientation)
-    
 }
 
 
 final class CalculatorPresenter: CalculatorPresenterProtocol {
-    
+   
     weak var view: CalculatorViewProtocol?
     
     private let portraitStructure: [[CalculatorButtonsEnum]] = [
@@ -47,13 +46,10 @@ final class CalculatorPresenter: CalculatorPresenterProtocol {
         view?.setStackView(from: structure, isRemoveAllEmentsFromStack: true)
     }
     
-    
-    
     func presentResult(value: String, expression: String?) {
         
         view?.showResult(value: value, expression: expression)
     }
-    
     
 }
 

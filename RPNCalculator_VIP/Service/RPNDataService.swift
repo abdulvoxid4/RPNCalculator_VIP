@@ -87,11 +87,7 @@ final class RPNDataService: RPNDataServiceProtocol {
             return closeParenthesisHandler(lastChar: lastChar,
                                            operators: operators,
                                            newCurrentInput: newCurrentInput)
-       // case .equal:
-//            equalHandler(operatorsWithBrackets: operatorsWithBrackets,
-//                                newCurrentInput: newCurrentInput,
-//                                newExpression: expression)
-            
+   
             // Numbers case
         default:
             return numbersHandler(
@@ -134,7 +130,7 @@ final class RPNDataService: RPNDataServiceProtocol {
             }
         }
         let result = stack.last
-        print("Result \(result)")
+     //   print("Result \(String(describing: result))")
         return result?.description
     }
     

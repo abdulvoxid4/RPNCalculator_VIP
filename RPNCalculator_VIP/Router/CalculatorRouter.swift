@@ -11,7 +11,7 @@ class CalculatorRouter {
     weak var calculatorViewController: ViewController?
     
     func navigateToHistory() {
-        let historyVC = HistoryViewController()
+        let historyVC = HistoryAssembly().giveHistoryViewController()
            historyVC.modalPresentationStyle = .pageSheet
            
            if let sheet = historyVC.sheetPresentationController {

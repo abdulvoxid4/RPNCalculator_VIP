@@ -13,5 +13,4 @@ extension UIColor {
     
     static var labelColor: UIColor = UIColor(named: "LabelColor") ?? .red
     
-    
 }

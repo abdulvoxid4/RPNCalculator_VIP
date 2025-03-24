@@ -22,6 +22,7 @@ extension UIView {
         case leftGreaterThan
         case widthGreaterThan
         case bottomToTop
+        case topOfBottom
     }
     
     func setConstraints(_ anchor: Anchor, view: UIView? = nil, constant: CGFloat = 0,gr: Bool? = nil) {
@@ -73,8 +74,10 @@ extension UIView {
         
         case .bottomToTop:
             self.bottomAnchor.constraint(equalTo: targetView.topAnchor, constant: -constant).isActive = true
+        
+        case .topOfBottom:
+            self.topAnchor.constraint(equalTo: targetView.bottomAnchor, constant: constant).isActive = true
         }
     }
 }
-
 

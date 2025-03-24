@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24B83" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CalculationHistoryEntity" representedClassName="CalculationHistoryEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="expression" optional="YES" attributeType="String"/>
+        <attribute name="result" optional="YES" attributeType="String"/>
+    </entity>
+</model>

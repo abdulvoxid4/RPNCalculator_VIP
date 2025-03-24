@@ -13,7 +13,6 @@ enum CalculatorButtonsEnum: String, CaseIterable{
     case openParenthesis = "("
     case closeParenthesis = ")"
     case divide = "÷"
-    //case divideDrop = "/"
     case multiplyX = "×"
     case multiply = "*"
     case minus = "-"
