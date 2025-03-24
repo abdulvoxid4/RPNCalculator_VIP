@@ -20,7 +20,7 @@ final class CalculatorPresenter: CalculatorPresenterProtocol {
     weak var view: CalculatorViewProtocol?
     
     private let portraitStructure: [[CalculatorButtonsEnum]] = [
-        [.backspace, .openParenthesis, .closeParenthesis , .divide],
+        [.backspace, .open, .close , .divide],
         [.seven, .eight, .nine, .multiplyX],
         [.four, .five, .six, .minus],
         [.one, .two, .three, .plus],
@@ -29,8 +29,8 @@ final class CalculatorPresenter: CalculatorPresenterProtocol {
     
     private let landscapeStructure: [[CalculatorButtonsEnum]] = [
         [.seven, .eight, .nine, .backspace, .divide],
-        [.four, .five, .six, .openParenthesis, .multiplyX],
-        [.one, .two, .three, .closeParenthesis, .minus],
+        [.four, .five, .six, .open, .multiplyX],
+        [.one, .two, .three, .close, .minus],
         [.allClear, .zero, .dot, .equal, .plus]
     ]
 

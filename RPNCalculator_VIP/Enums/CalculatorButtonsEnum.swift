@@ -10,8 +10,8 @@ import Foundation
 enum CalculatorButtonsEnum: String, CaseIterable{
     
     case backspace = "⌫"
-    case openParenthesis = "("
-    case closeParenthesis = ")"
+    case open = "("
+    case close = ")"
     case divide = "÷"
     case multiplyX = "×"
     case multiply = "*"
@@ -31,6 +31,10 @@ enum CalculatorButtonsEnum: String, CaseIterable{
     case dot = "."
     case equal = "="
     
+    
+    var char: Character {
+        return self.rawValue.count == 1 ? Character(self.rawValue) : Character("")
+    }
 }
 
 

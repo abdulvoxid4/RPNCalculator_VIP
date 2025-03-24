@@ -47,7 +47,7 @@ final class HistoryService: HistoryServiceProtocol {
     }
        
     
-//    func deleteItem(savedData: [(String,String)],indexPath: IndexPath) {
+//    func deleteItem(savedData: [(String,String)], indexPath: IndexPath) {
 //        let objectToDelete = savedData[indexPath.row]
 //        
 //        context.delete(objectToDelete) // Delete from Core Data

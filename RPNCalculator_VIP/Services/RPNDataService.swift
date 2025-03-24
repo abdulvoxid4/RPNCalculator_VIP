@@ -31,20 +31,19 @@ final class RPNDataService: RPNDataServiceProtocol {
     
     private func buttonPressed(currentInput: String, title: CB) -> String {
         
-            var newCurrentInput = currentInput
-            let operators: Set<Character> = ["+", "-", "×", "÷"]
-            let operatorsWithBrackets: Set<Character> = ["+", "-", "×", "÷", "(", ")"]
-            let lastNumber = newCurrentInput.split(whereSeparator: { operators.contains($0) }).last ?? ""
-            let lastNumberWithoutBrackets = newCurrentInput.split(whereSeparator: { operatorsWithBrackets.contains($0) }).last ?? ""
-            let lastChar = newCurrentInput.last ?? "E"
-          //  let newCurrentImput = newCurrentInput
-            var expression: String = ""
-
-            if newCurrentInput == "Error" {
-                newCurrentInput = ""
-                expression = ""
-            }
-
+        var newCurrentInput = currentInput
+        let operators: Set<Character> = [CB.plus.char, CB.minus.char, CB.multiplyX.char, CB.divide.char]
+        let operatorsWithBrackets: Set<Character> = [CB.plus.char, CB.minus.char, CB.multiplyX.char, CB.divide.char, CB.open.char, CB.close.char]
+        let lastNumber = newCurrentInput.split(whereSeparator: { operators.contains($0) }).last ?? ""
+        let lastNumberWithoutBrackets = newCurrentInput.split(whereSeparator: { operatorsWithBrackets.contains($0) }).last ?? ""
+        let lastChar = newCurrentInput.last ?? "E"
+        var expression: String = ""
+        
+        if newCurrentInput == "Error" {
+            newCurrentInput = ""
+            expression = ""
+        }
+        
         switch title {
             // Zero case
         case .zero:
@@ -79,15 +78,15 @@ final class RPNDataService: RPNDataServiceProtocol {
             )
             
             // Open parenthesis case
-        case .openParenthesis:
+        case .open:
             return openParenthesisHandler(newCurrentInput: newCurrentInput)
             
             // Close parenthesis case
-        case .closeParenthesis:
+        case .close:
             return closeParenthesisHandler(lastChar: lastChar,
                                            operators: operators,
                                            newCurrentInput: newCurrentInput)
-   
+            
             // Numbers case
         default:
             return numbersHandler(
@@ -98,7 +97,7 @@ final class RPNDataService: RPNDataServiceProtocol {
                 lastNumberWithoutBrackets: lastNumberWithoutBrackets,
                 newCurrentInput: newCurrentInput)
         }
-       
+        
     }
     
     // Evaluates and calculates the RPN expression
@@ -109,7 +108,7 @@ final class RPNDataService: RPNDataServiceProtocol {
                 
         for token in tokens {
             
-            if token == CB.openParenthesis.rawValue || token == CB.closeParenthesis.rawValue {
+            if token == CB.open.rawValue || token == CB.close.rawValue {
                 continue
             }
             
@@ -137,13 +136,19 @@ final class RPNDataService: RPNDataServiceProtocol {
     // Converts infix expression to postfix (RPN)
     private func infinixToPostfix(expression: String) -> String? {
        // let precedence: [Character: Int] = ["+": 1, "-": 1, "*": 2, "/": 2] // Level of operator
-        let precedence: [Character: Int] = ["+": 1, "-": 1, "×": 2, "÷": 2] // Level of operator
+        let precedence: [Character: Int] = [
+            CB.plus.char: 1,
+            CB.minus.char: 1,
+            CB.multiplyX.char: 2,
+            CB.divide.char: 2
+        ] // Level of operator
+        
         var output: [String] = []
         var operators: [Character] = []
         var numberBuffer = ""
         
         for (index, char) in expression.enumerated() {
-            if char.isNumber || char == "." {
+            if char.isNumber || char == CB.dot.char {
                 numberBuffer.append(char)
             } else {
                 if !numberBuffer.isEmpty {

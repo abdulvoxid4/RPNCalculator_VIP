@@ -15,9 +15,9 @@ class CalculatorRouter {
         let navController = UINavigationController(rootViewController: historyVC)
         navController.modalPresentationStyle = .pageSheet
            
-           if let sheet = navController.sheetPresentationController {
-               sheet.detents = [.medium(), .large()]
-               sheet.prefersGrabberVisible = true   // Shows grabber handle
+           if let bottomSheet = navController.sheetPresentationController {
+               bottomSheet.detents = [.medium(), .large()]
+               bottomSheet.prefersGrabberVisible = true
            }
         print("Inside CalculatorRouter")
         calculatorViewController?.present(navController, animated: true)
