@@ -16,8 +16,7 @@ extension String {
             CB.plus.char,
             CB.minus.char,
             CB.multiplyX.char,
-            CB.divide.char,
-            CB.close.char
+            CB.divide.char
         ]
         
         while let lastChar = str.last, opearators.contains(lastChar) {

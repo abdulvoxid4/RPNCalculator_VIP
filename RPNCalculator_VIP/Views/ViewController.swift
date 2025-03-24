@@ -151,10 +151,7 @@ extension ViewController: CalculatorViewProtocol {
    
     func setStackView(from structure: [[CalculatorButtonsEnum]], isRemoveAllEmentsFromStack: Bool) {
         if isRemoveAllEmentsFromStack == true {
-            
-            print("asdf")
             resetFullView()
-            stackLabel.text = "0"
         }
         
         for row in structure {

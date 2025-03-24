@@ -156,12 +156,12 @@ final class RPNDataService: RPNDataServiceProtocol {
                     numberBuffer = ""
                 }
                     
-                if char == "-" && (index == 0 || expression[expression.index(expression.startIndex, offsetBy: index - 1)] == "(") {
+                if char == CB.minus.char && (index == 0 || expression[expression.index(expression.startIndex, offsetBy: index - 1)] == CB.open.char) {
                     numberBuffer.append(char)
-                } else if char == "(" {
+                } else if char == CB.open.char {
                     operators.append(char)
-                } else if char == ")" {
-                    while let lastOp = operators.last, lastOp != "(" {
+                } else if char == CB.close.char {
+                    while let lastOp = operators.last, lastOp != CB.open.char {
                         output.append(String(operators.removeLast()))
                     }
                     operators.removeLast()
@@ -210,12 +210,12 @@ extension RPNDataService {
     func zeroHandler(lastNumber: String.SubSequence, lastChar: Character, lastNumberWithoutBrackets: String.SubSequence, newCurrentInput: String) -> String {
         
         var currentInput = newCurrentInput
-        if currentInput == "0" || (lastNumberWithoutBrackets == "0" && lastChar == "0") {
+        if currentInput == CB.zero.rawValue || (lastNumberWithoutBrackets == CB.zero.rawValue && lastChar == CB.zero.char) {
             return currentInput
-        } else if lastChar == ")" {
-            currentInput += "×0"
+        } else if lastChar == CB.close.char {
+            currentInput += CB.multiplyX.rawValue + CB.zero.rawValue
         } else {
-            currentInput += "0"
+            currentInput += CB.zero.rawValue
         }
         return currentInput
     }
@@ -229,17 +229,17 @@ extension RPNDataService {
         newCurrentInput: String) -> String {
         
         var currentInput = newCurrentInput
-        if currentInput == "0" || lastNumberWithoutBrackets == "0"{
+        if currentInput == CB.zero.rawValue || lastNumberWithoutBrackets == CB.zero.rawValue{
             if operators.contains(lastChar) {
                 currentInput += title.rawValue
             } else {
                 currentInput.removeLast()
                 currentInput += title.rawValue
             }
-        } else if lastChar == ")" {
+        } else if lastChar == CB.close.char {
           
-            currentInput += "×" + title.rawValue
-        } else if lastNumberWithoutBrackets == "0" && lastChar != "." {
+            currentInput += CB.multiplyX.rawValue + title.rawValue
+        } else if lastNumberWithoutBrackets == CB.zero.rawValue && lastChar != CB.dot.char {
             
             currentInput.removeLast()
             currentInput += title.rawValue
@@ -253,12 +253,12 @@ extension RPNDataService {
     func dotHandler(lastNumber:String.SubSequence, lastChar: Character, operators: Set<Character>, newCurrentInput: String) -> String {
         
         var currentInput = newCurrentInput
-        if !lastNumber.contains(".") && (currentInput.last?.isNumber ?? false) {
-            currentInput += "."
-        } else if operators.contains(lastChar) || lastChar == "(" {
-            currentInput += "0."
-        } else if lastChar == ")" {
-            currentInput += "×0."
+        if !lastNumber.contains(CB.dot.rawValue) && (currentInput.last?.isNumber ?? false) {
+            currentInput += CB.dot.rawValue
+        } else if operators.contains(lastChar) || lastChar == CB.open.char {
+            currentInput += CB.zero.rawValue + CB.dot.rawValue
+        } else if lastChar == CB.close.char {
+            currentInput += CB.multiplyX.rawValue + CB.zero.rawValue + CB.dot.rawValue
         }
         
         return currentInput
@@ -267,15 +267,15 @@ extension RPNDataService {
     func operatorsHandler(lastChar: Character, operators: Set<Character>, title: CalculatorButtonsEnum, newCurrentInput: String) -> String {
         
         var currentInput = newCurrentInput
-        if lastChar == "-" && currentInput.first == "("{
+        if lastChar == CB.minus.char && currentInput.first == CB.open.char{
             return currentInput
         }
         
         if let lastChar = currentInput.last {
-            if operators.contains(String(lastChar)) || lastChar == "." ||
-                (currentInput == "0" && title.rawValue == "-") {
+            if operators.contains(String(lastChar)) || lastChar == CB.dot.char ||
+                (currentInput == CB.zero.rawValue && title.rawValue == CB.minus.rawValue) {
                 currentInput.removeLast()
-            } else if lastChar == "(" && title.rawValue != "-" {
+            } else if lastChar == CB.open.char && title.rawValue != CB.minus.rawValue {
                 return currentInput
             }
         }
@@ -289,37 +289,41 @@ extension RPNDataService {
     func openParenthesisHandler(newCurrentInput: String) -> String {
         var currentInput = newCurrentInput
         
-        if currentInput == "0" {
-            currentInput = "("
+        if currentInput == CB.zero.rawValue {
+            currentInput = CB.open.rawValue
         } else if let lastChar = currentInput.last {
-            if lastChar == "." {
+            if lastChar == CB.dot.char {
                 currentInput.removeLast()
-                currentInput += "×("
-            } else if lastChar.isNumber || lastChar == ")" {
-                currentInput += "×("
+                currentInput += CB.multiplyX.rawValue + CB.open.rawValue
+            } else if lastChar.isNumber || lastChar == CB.close.char {
+                currentInput += CB.multiplyX.rawValue + CB.open.rawValue
             } else {
-                currentInput += "("
+                currentInput += CB.open.rawValue
             }
         } else {
-            currentInput += "("
+            currentInput += CB.open.rawValue
         }
         return currentInput
     }
     
     func closeParenthesisHandler(lastChar: Character, operators: Set<Character>, newCurrentInput: String) -> String{
         var currentInput = newCurrentInput
-        let openCount = currentInput.filter { $0 == "(" }.count
-        let closeCount = currentInput.filter { $0 == ")" }.count
+        let openCount = currentInput.filter { $0 == CB.open.char }.count
+        let closeCount = currentInput.filter { $0 == CB.close.char }.count
 
-        if openCount > closeCount, lastChar.isNumber || lastChar == ")" {
+        if openCount > closeCount, lastChar.isNumber || lastChar == CB.close.char {
             if operators.contains(currentInput.last ?? "A") {
                 currentInput.removeLast()
-                currentInput += ")"
-            } else {
-                currentInput += ")"
+                currentInput += CB.close.rawValue
+            } else  {
+                currentInput += CB.close.rawValue
             }
-            
         }
+//        } else if currentInput.last == CB.dot.char {
+//            currentInput.removeLast()
+//            currentInput += CB.close.rawValue
+//        }
+        
         return currentInput
     }
     
@@ -327,7 +331,7 @@ extension RPNDataService {
         var currentInput = newCurrentInput
         
         if currentInput.count == 1 {
-            currentInput = "0"
+            currentInput = CB.zero.rawValue
         } else {
             currentInput.removeLast()
         }

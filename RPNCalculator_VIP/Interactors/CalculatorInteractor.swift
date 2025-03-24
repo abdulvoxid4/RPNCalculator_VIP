@@ -38,7 +38,6 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
         
         if val == .equal {
             historyService.saveHistory(result: processedRes.0, expression: processedRes.1 ?? "Error")
-            
         }
         
         presenter.presentResult(value: processedRes.0, expression: processedRes.1)
