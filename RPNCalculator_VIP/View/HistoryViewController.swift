@@ -86,7 +86,7 @@ extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
        
         let entry = historyData[indexPath.row]
         cell.configure(expression: entry.expression, result: entry.result)
-        print(historyData)
+     //   print(historyData)
         return cell
     }
     

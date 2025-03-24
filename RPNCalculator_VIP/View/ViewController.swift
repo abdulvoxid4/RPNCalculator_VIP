@@ -13,7 +13,7 @@ protocol CalculatorViewProtocol: AnyObject {
 }
 
 class ViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - Dependencies
     var interactor: CalculatorInteractorProtocol
     var router: CalculatorRouter?
     
@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         let label = CalculatorLabel(
             text: "0",
             textColor: .labelColor,
-            font: .boldSystemFont(ofSize: 60)
+            font: .boldSystemFont(ofSize: 60) // 60
         )
         return label
     }()
@@ -56,12 +56,16 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         
+        let historyBarButtonItem = UIBarButtonItem(customView: historyButton)
+            navigationItem.leftBarButtonItem = historyBarButtonItem
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
         let isLandscapeMode = UIDevice.current.orientation.isLandscape
         interactor.didChangedAppOrientation(to: isLandscapeMode ? .landscape : .portrait)
     }
+    
+    //MARK: - INIT
     
     init(interactor: CalculatorInteractorProtocol, router: CalculatorRouter) {
         self.interactor = interactor
@@ -72,7 +76,6 @@ class ViewController: UIViewController {
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .viewBackgroundColor
-        view.addSubview(historyButton)
         view.addSubview(expressionLabel)
         view.addSubview(scrollView)
         scrollView.addSubview(stackLabel)
@@ -87,17 +90,14 @@ class ViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        historyButton.setConstraints(.top, view: view, constant: 90)
-        historyButton.setConstraints(.left, view: view, constant: 30)
-        
         expressionLabel.setConstraints(.left, view: view, constant: 30)
         expressionLabel.setConstraints(.right, view: view, constant: 30)
         expressionLabel.setConstraints(.bottomToTop, view: stackLabel, constant: 5)
         
         scrollView.setConstraints(.left, view: view, constant: 30)
         scrollView.setConstraints(.right, view: view, constant: 30)
-        scrollView.setConstraints(.bottomSafe, view: view, constant: -ScreenSize.height / 2 - 20)
-        scrollView.setConstraints(.height, constant: ScreenSize.height / 10)
+        scrollView.setConstraints(.bottomToTop, view: buttonsStackView, constant: 20)
+        scrollView.setConstraints(.height, constant: UIScreen.main.bounds.height / 10)
         
         stackLabel.setConstraints(.top, view: scrollView)
         stackLabel.setConstraints(.bottom, view: scrollView)
@@ -108,7 +108,7 @@ class ViewController: UIViewController {
         buttonsStackView.setConstraints(.left, view: view, constant: 30)
         buttonsStackView.setConstraints(.right, view: view, constant: 30)
         buttonsStackView.setConstraints(.bottomLessThan, view: view, constant: 20)
-        buttonsStackView.setConstraints(.height, constant: ScreenSize.height / 2 )
+        buttonsStackView.setConstraints(.height, constant: UIScreen.main.bounds.height / 2 )
         
     }
     
@@ -139,9 +139,6 @@ class ViewController: UIViewController {
     }
     
     @objc private func historyButtonTapped() {
-        
-        print("Inside button")
-        
         router?.navigateToHistory()  // Calls the router to show HistoryVC
        }
     
@@ -154,7 +151,10 @@ extension ViewController: CalculatorViewProtocol {
    
     func setStackView(from structure: [[CalculatorButtonsEnum]], isRemoveAllEmentsFromStack: Bool) {
         if isRemoveAllEmentsFromStack == true {
+            
+            print("asdf")
             resetFullView()
+            stackLabel.text = "0"
         }
         
         for row in structure {
