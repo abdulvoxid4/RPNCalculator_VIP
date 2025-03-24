@@ -24,14 +24,18 @@ class HistoryViewController: UIViewController {
         return tableView
     }()
     
-    private let doneButton: UIButton = {
-        let doneButton = UIButton(type: .system)
-        doneButton.setTitle("Done", for: .normal)
-        return doneButton
-    }()
-    
     override func viewDidLoad() {
         view.backgroundColor = .viewBackgroundColor
+        title = "History"
+        
+        // Adding "Done" button
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Done",
+            style: .done,
+            target: self,
+            action: #selector(doneTapped)
+        )
+        
         settingTableView()
         
         interactor.didFetchHistory()
@@ -51,22 +55,16 @@ class HistoryViewController: UIViewController {
         tableView.register(TableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.frame = view.bounds
         view.addSubview(tableView)
-    }
-    
-    private func setupUI() {
-        view.addSubview(doneButton)
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            doneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
-        ])
-        doneButton.addTarget(self, action: #selector(doneTapped), for: .touchUpInside)
+        
+        tableView.setConstraints(.top, view: view)
+        tableView.setConstraints(.left, view: view)
+        tableView.setConstraints(.right, view: view)
+        tableView.setConstraints(.bottom, view: view)
     }
     
     func updateHistory(_ history: [(expression: String, result: String)]) {
-            self.historyData = history
+        self.historyData = history.reversed()
                 
             tableView.reloadData()
         }
@@ -86,7 +84,6 @@ extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
        
         let entry = historyData[indexPath.row]
         cell.configure(expression: entry.expression, result: entry.result)
-     //   print(historyData)
         return cell
     }
     

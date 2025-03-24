@@ -105,8 +105,8 @@ class ViewController: UIViewController {
         stackLabel.setConstraints(.leftGreaterThan, view: scrollView)
         stackLabel.setConstraints(.widthGreaterThan, view: scrollView)
     
-        buttonsStackView.setConstraints(.left, view: view, constant: 30)
-        buttonsStackView.setConstraints(.right, view: view, constant: 30)
+        buttonsStackView.setConstraints(.left, view: view, constant: 20)
+        buttonsStackView.setConstraints(.right, view: view, constant: 20)
         buttonsStackView.setConstraints(.bottomLessThan, view: view, constant: 20)
         buttonsStackView.setConstraints(.height, constant: UIScreen.main.bounds.height / 2 )
         
