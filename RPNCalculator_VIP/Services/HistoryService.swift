@@ -11,6 +11,7 @@ import CoreData
 protocol HistoryServiceProtocol {
     func saveHistory(result: String, expression: String)
     func fetchHistory() -> [(String, String)]
+    //func deleteItem(indexPath: IndexPath)
 }
 
 final class HistoryService: HistoryServiceProtocol {
@@ -45,6 +46,20 @@ final class HistoryService: HistoryServiceProtocol {
         }
     }
        
+    
+//    func deleteItem(savedData: [(String,String)],indexPath: IndexPath) {
+//        let objectToDelete = savedData[indexPath.row]
+//        
+//        context.delete(objectToDelete) // Delete from Core Data
+//        savedData.remove(at: indexPath.row) // Remove from array
+//        
+//        do {
+//            try context.save() // Save changes
+//            tableView.deleteRows(at: [indexPath], with: .fade) // Remove row with animation
+//        } catch {
+//            print("Failed to delete: \(error)")
+//        }
+//    }
     
     
 }
