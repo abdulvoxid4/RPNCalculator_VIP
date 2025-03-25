@@ -36,6 +36,8 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
         
        let processedRes = rpnDataService.directTo(currentInput: currentInput, title: val)
         
+        print("#\(processedRes)")
+        
         if val == .equal {
             historyService.saveHistory(result: processedRes.0, expression: processedRes.1 ?? "Error")
         }

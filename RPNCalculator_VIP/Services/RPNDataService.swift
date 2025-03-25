@@ -147,6 +147,10 @@ final class RPNDataService: RPNDataServiceProtocol {
         var operators: [Character] = []
         var numberBuffer = ""
         
+        var expressionForTest = expression
+        
+        print("±\(expressionForTest)")
+        
         for (index, char) in expression.enumerated() {
             if char.isNumber || char == CB.dot.char {
                 numberBuffer.append(char)
@@ -269,20 +273,18 @@ extension RPNDataService {
     func operatorsHandler(lastChar: Character, operators: Set<Character>, title: CalculatorButtonsEnum, newCurrentInput: String) -> String {
         
         var currentInput = newCurrentInput
-        if lastChar == CB.minus.char && currentInput.first == CB.open.char{
+        var beforeLastChar = String(newCurrentInput.dropLast())
+        if lastChar == CB.minus.char && beforeLastChar.last == CB.open.char {
             return currentInput
         }
-        
-        if let lastChar = currentInput.last {
-            if operators.contains(String(lastChar)) || lastChar == CB.dot.char ||
-                (currentInput == CB.zero.rawValue && title.rawValue == CB.minus.rawValue) {
-                currentInput.removeLast()
-            } else if lastChar == CB.open.char && title.rawValue != CB.minus.rawValue {
-                return currentInput
-            }
+    
+        if operators.contains(String(lastChar)) || lastChar == CB.dot.char ||
+            (currentInput == CB.zero.rawValue && title.rawValue == CB.minus.rawValue) {
+            currentInput.removeLast()
+        } else if lastChar == CB.open.char && title.rawValue != CB.minus.rawValue {
+            return currentInput
         }
         currentInput += title.rawValue
-      //  print(currentInput)
         return currentInput
     }
     

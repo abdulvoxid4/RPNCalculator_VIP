@@ -10,7 +10,7 @@ import Foundation
 protocol CalculatorPresenterProtocol {
     
     func presentResult(value: String, expression: String?)
-    func setStackView()
+    func presentStackView()
     func changePosition(to orientation: AppOrientation)
 }
 
@@ -35,7 +35,7 @@ final class CalculatorPresenter: CalculatorPresenterProtocol {
     ]
 
     // When app launched for the first time
-    func setStackView() {
+    func presentStackView() {
         view?.setStackView(from: portraitStructure, isRemoveAllEmentsFromStack: false)
     }
     
