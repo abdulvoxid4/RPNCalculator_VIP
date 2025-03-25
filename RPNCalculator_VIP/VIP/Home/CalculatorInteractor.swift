@@ -10,6 +10,8 @@ import CoreData
 
 protocol CalculatorInteractorProtocol {
     func processResult(val: CalculatorButtonsEnum, currentInput: String)
+    func viewDidLoad()
+    func orentationDidChanged()
 }
 
 
@@ -33,13 +35,20 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
         
        let processedRes = rpnDataService.directTo(currentInput: currentInput, title: val)
         
-        print("#\(processedRes)")
         
         if val == .equal {
             historyService.saveHistory(result: processedRes.0, expression: processedRes.1 ?? "Error")
         }
         
         presenter.presentResult(value: processedRes.0, expression: processedRes.1)
+    }
+    
+    func viewDidLoad() {
+        presenter.makeCalculatorButtons(sholdRemake: false)
+    }
+    
+    func orentationDidChanged() {
+        presenter.makeCalculatorButtons(sholdRemake: true)
     }
 }
 

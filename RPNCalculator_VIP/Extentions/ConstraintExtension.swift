@@ -40,10 +40,10 @@ extension UIView {
             self.topAnchor.constraint(equalTo: targetView.topAnchor, constant: constant).isActive = true
         
         case .left:
-            self.leadingAnchor.constraint(equalTo: targetView.leadingAnchor, constant: constant).isActive = true
+            self.leadingAnchor.constraint(equalTo: targetView.safeAreaLayoutGuide.leadingAnchor, constant: constant).isActive = true
         
         case .right:
-            self.trailingAnchor.constraint(equalTo: targetView.trailingAnchor, constant: -constant).isActive = true
+            self.trailingAnchor.constraint(equalTo: targetView.safeAreaLayoutGuide.trailingAnchor, constant: -constant).isActive = true
        
         case .bottom:
             self.bottomAnchor.constraint(equalTo: targetView.bottomAnchor, constant: -constant).isActive = true

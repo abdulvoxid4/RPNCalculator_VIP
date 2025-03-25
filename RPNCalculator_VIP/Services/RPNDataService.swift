@@ -21,7 +21,9 @@ final class RPNDataService: RPNDataServiceProtocol {
             
             let better = currentInput.removeUntilLastNumber ?? currentInput
             
-            let postfixInput = infinixToPostfix(expression: better)
+            let postfixInput = infinixToPostfix(inputValue: better)
+          //  print("Postfix: \(postfixInput)")
+          //  postfixInput?.removeUntilLastNumber?.count
             let result = (calculate(postfixInput ?? "Error1") ?? "Error2")
             return (formatResult(result: result), better)
         } else {
@@ -133,7 +135,7 @@ final class RPNDataService: RPNDataServiceProtocol {
     }
     
     // Converts infix expression to postfix (RPN)
-    private func infinixToPostfix(expression: String) -> String? {
+    private func infinixToPostfix(inputValue: String) -> String? {
         let precedence: [Character: Int] = [
             CB.plus.char: 1,
             CB.minus.char: 1,
@@ -146,7 +148,7 @@ final class RPNDataService: RPNDataServiceProtocol {
         var numberBuffer = ""
         
         
-        for (index, char) in expression.enumerated() {
+        for (index, char) in inputValue.enumerated() {
             if char.isNumber || char == CB.dot.char {
                 numberBuffer.append(char)
             } else {
@@ -155,7 +157,7 @@ final class RPNDataService: RPNDataServiceProtocol {
                     numberBuffer = ""
                 }
                     
-                if char == CB.minus.char && (index == 0 || expression[expression.index(expression.startIndex, offsetBy: index - 1)] == CB.open.char) {
+                if char == CB.minus.char && (index == 0 || inputValue[inputValue.index(inputValue.startIndex, offsetBy: index - 1)] == CB.open.char) {
                     numberBuffer.append(char)
                 } else if char == CB.open.char {
                     operators.append(char)

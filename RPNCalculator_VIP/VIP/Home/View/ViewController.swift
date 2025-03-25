@@ -9,6 +9,7 @@ import UIKit
 
 protocol CalculatorViewProtocol: AnyObject {
     func showResult(value: String, expression: String?)
+    func setupStackButtons(from structure: [[CalculatorButtonsEnum]], shouldRemoveAllElements: Bool)
 }
 
 class ViewController: UIViewController {
@@ -18,6 +19,8 @@ class ViewController: UIViewController {
     
     // MARK: - UI Components
     private let buttonsStackView = CalculatorStackView(axis: .vertical)
+    
+    private var stackHeightConstraint: NSLayoutConstraint?
     
     private let stackLabel: CalculatorLabel = {
         let label = CalculatorLabel(
@@ -49,23 +52,24 @@ class ViewController: UIViewController {
         historyButton.tintColor = .orange
         return historyButton
     }()
-    
-    private let portraitStructure: [[CalculatorButtonsEnum]] = [
-        [.backspace, .open, .close , .divide],
-        [.seven, .eight, .nine, .multiplyX],
-        [.four, .five, .six, .minus],
-        [.one, .two, .three, .plus],
-        [.allClear, .zero, .dot, .equal]
-    ]
 
     // MARK: - Lifecycle function
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        interactor.viewDidLoad()
         let historyBarButtonItem = UIBarButtonItem(customView: historyButton)
             navigationItem.leftBarButtonItem = historyBarButtonItem
         
         setupUI()
+    }
+    
+    override func viewWillTransition(
+        to size: CGSize,
+        with coordinator: UIViewControllerTransitionCoordinator
+    ) {
+        super.viewWillTransition(to: size, with: coordinator)
+        interactor.orentationDidChanged()
+        stackHeightConstraint?.constant = UIScreen.main.bounds.height / 2
     }
     
     //MARK: - INIT
@@ -78,8 +82,7 @@ class ViewController: UIViewController {
     // MARK: - UI Setup
     private func setupUI() {
         view.backgroundColor = .viewBackgroundColor
-       
-        setupStackButtons() // Sets up StackView buttons
+        view.addSubview(buttonsStackView)
       
         setupConstraints() // Sets up constraints for all UI elements
     
@@ -87,10 +90,12 @@ class ViewController: UIViewController {
         historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
     }
     
-    private func setupStackButtons() {
-        view.addSubview(buttonsStackView)
+    func setupStackButtons(from structure: [[CalculatorButtonsEnum]], shouldRemoveAllElements: Bool) {
+        if shouldRemoveAllElements {
+            buttonsStackView.removeAllArrangedSubviews()
+        }
         
-        for row in portraitStructure {
+        for row in structure {
             let rowStack = CalculatorStackView(axis: .horizontal)
             
             for title in row {
@@ -101,14 +106,16 @@ class ViewController: UIViewController {
             }
             buttonsStackView.addArrangedSubview(rowStack)
         }
-        
     }
     
     private func setupConstraints() {
         buttonsStackView.setConstraints(.left, view: view, constant: 20)
         buttonsStackView.setConstraints(.right, view: view, constant: 20)
         buttonsStackView.setConstraints(.bottomLessThan, view: view, constant: 20)
-        buttonsStackView.setConstraints(.height, constant: UIScreen.main.bounds.height / 2 )
+        stackHeightConstraint = buttonsStackView.heightAnchor.constraint(
+            equalToConstant: UIScreen.main.bounds.height / 2
+        )
+        stackHeightConstraint?.isActive = true
         
         view.addSubview(scrollView)
         scrollView.setConstraints(.left, view: view, constant: 30)

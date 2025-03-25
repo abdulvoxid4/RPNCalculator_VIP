@@ -19,7 +19,6 @@ class CalculatorRouter {
                bottomSheet.detents = [.medium(), .large()]
                bottomSheet.prefersGrabberVisible = true
            }
-        print("Inside CalculatorRouter")
         calculatorViewController?.present(navController, animated: true)
        }
 }
