@@ -9,10 +9,7 @@ import UIKit
 import CoreData
 
 protocol CalculatorInteractorProtocol {
-    
     func processResult(val: CalculatorButtonsEnum, currentInput: String)
-    func didChangedAppOrientation(to orientation: AppOrientation)
-    func firstViewDidLoad()
 }
 
 
@@ -44,15 +41,6 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
         
         presenter.presentResult(value: processedRes.0, expression: processedRes.1)
     }
-    
-    func didChangedAppOrientation(to orientation: AppOrientation) {
-        presenter.changePosition(to: orientation)
-    }
-    
-    func firstViewDidLoad() {
-        presenter.setStackView()
-    }
-    
 }
 
 
