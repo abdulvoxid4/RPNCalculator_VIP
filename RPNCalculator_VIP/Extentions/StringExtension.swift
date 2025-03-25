@@ -12,7 +12,7 @@ extension String {
     var removeUntilLastNumber: String? {
         
         var str = self
-        var opearators =  [
+        let opearators =  [
             CB.plus.char,
             CB.minus.char,
             CB.multiplyX.char,

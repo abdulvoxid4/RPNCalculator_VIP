@@ -37,11 +37,11 @@ final class RPNDataService: RPNDataServiceProtocol {
         let lastNumber = newCurrentInput.split(whereSeparator: { operators.contains($0) }).last ?? ""
         let lastNumberWithoutBrackets = newCurrentInput.split(whereSeparator: { operatorsWithBrackets.contains($0) }).last ?? ""
         let lastChar = newCurrentInput.last ?? "E"
-        var expression: String = ""
+       // var expression: String = ""
         
         if newCurrentInput == "Error" {
             newCurrentInput = ""
-            expression = ""
+          //  expression = ""
         }
         
         switch title {
@@ -129,13 +129,11 @@ final class RPNDataService: RPNDataServiceProtocol {
             }
         }
         let result = stack.last
-     //   print("Result \(String(describing: result))")
         return result?.description
     }
     
     // Converts infix expression to postfix (RPN)
     private func infinixToPostfix(expression: String) -> String? {
-       // let precedence: [Character: Int] = ["+": 1, "-": 1, "*": 2, "/": 2] // Level of operator
         let precedence: [Character: Int] = [
             CB.plus.char: 1,
             CB.minus.char: 1,
@@ -147,9 +145,6 @@ final class RPNDataService: RPNDataServiceProtocol {
         var operators: [Character] = []
         var numberBuffer = ""
         
-        var expressionForTest = expression
-        
-        print("±\(expressionForTest)")
         
         for (index, char) in expression.enumerated() {
             if char.isNumber || char == CB.dot.char {
@@ -203,7 +198,7 @@ final class RPNDataService: RPNDataServiceProtocol {
             }
         } else {
             // Format the double value with 7 decimal places and remove trailing zeros
-            let formattedString = String(format: "%.7f", doubleResult)
+            let formattedString = String(format: "%.9f", doubleResult)
             return formattedString.replacingOccurrences(of: "\\.?0+$", with: "", options: .regularExpression)
         }
     }
@@ -273,7 +268,7 @@ extension RPNDataService {
     func operatorsHandler(lastChar: Character, operators: Set<Character>, title: CalculatorButtonsEnum, newCurrentInput: String) -> String {
         
         var currentInput = newCurrentInput
-        var beforeLastChar = String(newCurrentInput.dropLast())
+        let beforeLastChar = String(newCurrentInput.dropLast())
         if lastChar == CB.minus.char && beforeLastChar.last == CB.open.char {
             return currentInput
         }

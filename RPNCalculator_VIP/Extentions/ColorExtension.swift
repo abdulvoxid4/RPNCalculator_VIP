@@ -11,6 +11,6 @@ extension UIColor {
     
     static var viewBackgroundColor: UIColor = UIColor(named: "ViewBackgroundColor") ?? .red
     
-    static var labelColor: UIColor = UIColor(named: "LabelColor") ?? .red
+    static var labelColor: UIColor = UIColor(named: "MainLabelColor") ?? .red
     
 }
