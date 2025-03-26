@@ -11,19 +11,20 @@ extension String {
     
     var removeUntilLastNumber: String? {
         
-        var str = self
+        var string = self
         let opearators =  [
             CB.plus.char,
             CB.minus.char,
             CB.multiplyX.char,
-            CB.divide.char
+            CB.divide.char,
+            CB.open.char
         ]
         
-        while let lastChar = str.last, opearators.contains(lastChar) {
-            if str.isEmpty {return nil}
-            str.removeLast()
+        while let lastChar = string.last, opearators.contains(lastChar) {
+            if string.isEmpty {return nil}
+            string.removeLast()
         }
-        return str
+        return string
     }
     
 }

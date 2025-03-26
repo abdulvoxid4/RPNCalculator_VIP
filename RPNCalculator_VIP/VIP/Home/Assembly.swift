@@ -16,7 +16,7 @@ protocol AssemblyProtocol {
 
 
 final class Assembly: AssemblyProtocol {
-   
+    
     
     func giveViewController() -> ViewController {
         
@@ -36,6 +36,6 @@ final class Assembly: AssemblyProtocol {
         
         return view
     }
-
+    
     
 }

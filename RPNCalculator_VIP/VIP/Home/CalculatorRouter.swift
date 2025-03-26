@@ -14,11 +14,11 @@ class CalculatorRouter {
         let historyVC = HistoryAssembly().giveHistoryViewController()
         let navController = UINavigationController(rootViewController: historyVC)
         navController.modalPresentationStyle = .pageSheet
-           
-           if let bottomSheet = navController.sheetPresentationController {
-               bottomSheet.detents = [.medium(), .large()]
-               bottomSheet.prefersGrabberVisible = true
-           }
+        
+        if let bottomSheet = navController.sheetPresentationController {
+            bottomSheet.detents = [.medium(), .large()]
+            bottomSheet.prefersGrabberVisible = true
+        }
         calculatorViewController?.present(navController, animated: true)
-       }
+    }
 }

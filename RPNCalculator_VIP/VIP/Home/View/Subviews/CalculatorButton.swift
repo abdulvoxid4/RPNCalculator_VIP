@@ -14,7 +14,7 @@ final class CalculatorButton: UIButton {
         titleLabel?.font = UIFont.systemFont(ofSize: 30, weight: .bold)
         setTitleColor(.white, for: .normal)
         backgroundColor = setBackgroundColorToEachButton(label: title)
-        layer.cornerRadius = 16 //(UIScreen.main.bounds.height / 2 - 60) / 10 
+        layer.cornerRadius = 16 
         translatesAutoresizingMaskIntoConstraints = false
     }
     

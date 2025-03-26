@@ -18,7 +18,6 @@ final class HistoryService: HistoryServiceProtocol {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     func fetchHistory() -> [(String, String)] {
-        print("History fetched")
         let request: NSFetchRequest<CalculationHistoryEntity> = CalculationHistoryEntity.fetchRequest()
         
         do {
@@ -33,7 +32,6 @@ final class HistoryService: HistoryServiceProtocol {
     }
     
     func saveHistory(result: String, expression: String) {
-        print("History Saved")
         let historyEntry = CalculationHistoryEntity(context: context)
         historyEntry.expression = expression
         historyEntry.result = result

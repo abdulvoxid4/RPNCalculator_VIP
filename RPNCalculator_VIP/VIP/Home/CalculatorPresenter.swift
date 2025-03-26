@@ -12,13 +12,14 @@ protocol CalculatorPresenterProtocol {
     var landscapeStructure: [[CalculatorButtonsEnum]] { get }
     var orentation: UIDeviceOrientation { get }
     func presentResult(value: String, expression: String?)
-    func makeCalculatorButtons(sholdRemake: Bool)
+    func presentCalculatorButtons(shouldRemake: Bool)
 }
 
 final class CalculatorPresenter: CalculatorPresenterProtocol {
     var orentation: UIDeviceOrientation { UIDevice.current.orientation }
     
     weak var view: CalculatorViewProtocol?
+    
     var portraitStructure: [[CalculatorButtonsEnum]] = [
         [.backspace, .open, .close , .divide],
         [.seven, .eight, .nine, .multiplyX],
@@ -38,9 +39,9 @@ final class CalculatorPresenter: CalculatorPresenterProtocol {
         view?.showResult(value: value, expression: expression)
     }
     
-    func makeCalculatorButtons(sholdRemake: Bool) {
+    func presentCalculatorButtons(shouldRemake: Bool) {
         let structure = orentation.isLandscape ? landscapeStructure : portraitStructure
-        view?.setupStackButtons(from: structure, shouldRemoveAllElements: sholdRemake)
+        view?.setupStackButtons(from: structure, shouldRemoveAllElements: shouldRemake)
     }
 }
 

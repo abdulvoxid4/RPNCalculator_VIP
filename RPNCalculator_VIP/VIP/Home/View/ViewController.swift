@@ -22,11 +22,13 @@ class ViewController: UIViewController {
     
     private var stackHeightConstraint: NSLayoutConstraint?
     
+    private var scrollViewHeight: CGFloat?
+    
     private let stackLabel: CalculatorLabel = {
         let label = CalculatorLabel(
             text: "0",
             textColor: .labelColor,
-            font: .boldSystemFont(ofSize: 60) // 60
+            font: .boldSystemFont(ofSize: 50)
         )
         return label
     }()
@@ -35,7 +37,7 @@ class ViewController: UIViewController {
         let label = CalculatorLabel(
             text: "",
             textColor: .gray,
-            font: .boldSystemFont(ofSize: 30)
+            font: .systemFont(ofSize: 30)
         )
         return label
     }()
@@ -52,13 +54,13 @@ class ViewController: UIViewController {
         historyButton.tintColor = .orange
         return historyButton
     }()
-
+    
     // MARK: - Lifecycle function
     override func viewDidLoad() {
         super.viewDidLoad()
         interactor.viewDidLoad()
         let historyBarButtonItem = UIBarButtonItem(customView: historyButton)
-            navigationItem.leftBarButtonItem = historyBarButtonItem
+        navigationItem.leftBarButtonItem = historyBarButtonItem
         
         setupUI()
     }
@@ -69,7 +71,9 @@ class ViewController: UIViewController {
     ) {
         super.viewWillTransition(to: size, with: coordinator)
         interactor.orentationDidChanged()
+        
         stackHeightConstraint?.constant = UIScreen.main.bounds.height / 2
+        
     }
     
     //MARK: - INIT
@@ -83,10 +87,10 @@ class ViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .viewBackgroundColor
         view.addSubview(buttonsStackView)
-      
-        setupConstraints() // Sets up constraints for all UI elements
-    
-        // When historyButton tapped
+        
+        setupConstraints()
+        
+        //HistoryButton tapped
         historyButton.addTarget(self, action: #selector(historyButtonTapped), for: .touchUpInside)
     }
     
@@ -112,7 +116,8 @@ class ViewController: UIViewController {
         buttonsStackView.setConstraints(.left, view: view, constant: 20)
         buttonsStackView.setConstraints(.right, view: view, constant: 20)
         buttonsStackView.setConstraints(.bottomLessThan, view: view, constant: 20)
-        stackHeightConstraint = buttonsStackView.heightAnchor.constraint(
+        stackHeightConstraint =
+        buttonsStackView.heightAnchor.constraint(
             equalToConstant: UIScreen.main.bounds.height / 2
         )
         stackHeightConstraint?.isActive = true
@@ -120,13 +125,19 @@ class ViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.setConstraints(.left, view: view, constant: 30)
         scrollView.setConstraints(.right, view: view, constant: 30)
-        scrollView.setConstraints(.bottomToTop, view: buttonsStackView, constant: 20)
-        scrollView.setConstraints(.height, constant: UIScreen.main.bounds.height / 10)
+        scrollView.setConstraints(.bottomToTop, view: buttonsStackView, constant: 15)
+        
+        if  UIDevice.current.orientation.isLandscape {
+            scrollViewHeight = UIScreen.main.bounds.height / 7
+        } else {
+            scrollViewHeight = UIScreen.main.bounds.height / 11
+        }
+        
+        scrollView.setConstraints(.height, constant: scrollViewHeight ?? 11)
         
         scrollView.addSubview(stackLabel)
         stackLabel.setConstraints(.top, view: scrollView)
         stackLabel.setConstraints(.bottom, view: scrollView)
-        stackLabel.setConstraints(.right, view: scrollView)
         stackLabel.setConstraints(.leftGreaterThan, view: scrollView)
         stackLabel.setConstraints(.widthGreaterThan, view: scrollView)
         
@@ -134,23 +145,23 @@ class ViewController: UIViewController {
         expressionLabel.setConstraints(.left, view: view, constant: 30)
         expressionLabel.setConstraints(.right, view: view, constant: 30)
         expressionLabel.setConstraints(.bottomToTop, view: stackLabel, constant: 5)
-       
+        
     }
-
+    
     
     // MARK: - Button Actions
     @objc private func buttonTapped(_ sender: UIButton) {
         guard let title = sender.currentTitle, !title.isEmpty else { return }
         
         let titleBtn = CalculatorButtonsEnum(rawValue: title) ?? .allClear
-            
+        
         guard let txtstr = stackLabel.text else {return}
-        interactor.processResult(val: titleBtn, currentInput: txtstr)
+        interactor.processResult(value: titleBtn, currentInput: txtstr)
     }
     
     @objc private func historyButtonTapped() {
-        router?.navigateToHistory()  // Calls the router to show HistoryVC
-       }
+        router?.navigateToHistory()
+    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -158,7 +169,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: CalculatorViewProtocol {
-   
+    
     func showResult(value: String, expression: String?) {
         stackLabel.text = value
         if let expression {
@@ -169,12 +180,13 @@ extension ViewController: CalculatorViewProtocol {
         updateDisplay()
     }
     
+    // Makes Label more flexible for scrollView
     private func updateDisplay() {
         guard let currentInput = stackLabel.text else { return }
         
         let textSize = (currentInput as NSString).size(withAttributes: [.font: stackLabel.font as Any])
         let labelWidth = max(textSize.width, scrollView.frame.width)
-
+        
         stackLabel.frame.size.width = labelWidth
         
         scrollView.contentSize = CGSize(width: labelWidth, height: scrollView.frame.height)

@@ -28,7 +28,6 @@ class HistoryViewController: UIViewController {
         view.backgroundColor = .viewBackgroundColor
         title = "History"
         
-        // Adding "Done" button
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "Done",
             style: .done,
@@ -65,13 +64,14 @@ class HistoryViewController: UIViewController {
     
     func updateHistory(_ history: [(expression: String, result: String)]) {
         self.historyData = history.reversed()
-                
-            tableView.reloadData()
-        }
+        
+        tableView.reloadData()
+    }
     
+    // MARK: - Button Actions
     @objc private func doneTapped() {
-            router?.dismissHistory()
-        }
+        router?.dismissHistory()
+    }
 }
 
 extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
@@ -82,7 +82,7 @@ extension HistoryViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as?
                 TableViewCell else { return UITableViewCell() }
-       
+        
         let entry = historyData[indexPath.row]
         cell.configure(expression: entry.expression, result: entry.result)
         return cell

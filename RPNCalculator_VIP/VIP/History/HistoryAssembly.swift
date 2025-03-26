@@ -16,7 +16,7 @@ protocol HistoryAssemblyProtocol {
 
 
 final class HistoryAssembly: HistoryAssemblyProtocol {
-   
+    
     
     func giveHistoryViewController() -> HistoryViewController {
         
@@ -36,6 +36,6 @@ final class HistoryAssembly: HistoryAssemblyProtocol {
         
         return historyView
     }
-
+    
     
 }

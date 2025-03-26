@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 protocol CalculatorInteractorProtocol {
-    func processResult(val: CalculatorButtonsEnum, currentInput: String)
+    func processResult(value: CalculatorButtonsEnum, currentInput: String)
     func viewDidLoad()
     func orentationDidChanged()
 }
@@ -18,7 +18,7 @@ protocol CalculatorInteractorProtocol {
 final class CalculatorInteractor: CalculatorInteractorProtocol {
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
- 
+    
     // MARK: - Dependencies
     let rpnDataService = RPNDataService()
     let historyService = HistoryService()
@@ -29,28 +29,36 @@ final class CalculatorInteractor: CalculatorInteractorProtocol {
     init(presenter: CalculatorPresenterProtocol) {
         self.presenter = presenter
     }
-
-    func processResult(val: CalculatorButtonsEnum, currentInput: String) {
+    
+    func processResult(value: CalculatorButtonsEnum, currentInput: String) {
         
         
-       let processedRes = rpnDataService.directTo(currentInput: currentInput, title: val)
+        let processedRes = rpnDataService.directTo(currentInput: currentInput, title: value)
         
         
-        if val == .equal {
-            historyService.saveHistory(result: processedRes.0, expression: processedRes.1 ?? "Error")
+        if value == .equal, let expression = processedRes.1,
+           expression.rangeOfCharacter(from: CharacterSet(charactersIn: "+-÷×")) != nil
+        {
+            historyService.saveHistory(result: processedRes.0, expression: expression)
         }
         
-        presenter.presentResult(value: processedRes.0, expression: processedRes.1)
+        let expressionToPass = processedRes.1?
+            .rangeOfCharacter(from: CharacterSet(charactersIn: "+-÷×")) != nil ? processedRes.1 : nil
+        presenter.presentResult(value: processedRes.0, expression: expressionToPass)
+        
     }
     
+    // When App launched for the first time
     func viewDidLoad() {
-        presenter.makeCalculatorButtons(sholdRemake: false)
+        presenter.presentCalculatorButtons(shouldRemake: false)
     }
     
+    // When orientation is changed
     func orentationDidChanged() {
-        presenter.makeCalculatorButtons(sholdRemake: true)
+        presenter.presentCalculatorButtons(shouldRemake: true)
     }
+    
 }
 
 
- 
+

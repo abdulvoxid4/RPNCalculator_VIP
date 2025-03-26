@@ -7,11 +7,11 @@
 
 
 protocol HistoryPresenterProtocol {
-   func didFetchHistoryData(_ history: [(expression: String, result: String)])
+    func didFetchHistoryData(_ history: [(expression: String, result: String)])
 }
 
 final class HistoryPresenter: HistoryPresenterProtocol {
-   
+    
     weak var historyView: HistoryViewController?
     
     func didFetchHistoryData(_ history: [(expression: String, result: String)]) {

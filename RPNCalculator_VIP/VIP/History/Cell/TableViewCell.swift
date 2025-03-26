@@ -34,7 +34,7 @@ class TableViewCell: UITableViewCell {
         
         resultLabel.setConstraints(.topOfBottom, view: expressionLabel, constant: 10)
         resultLabel.setConstraints(.left, view: contentView, constant: 20)
-       
+        
     }
     
     required init?(coder: NSCoder) {

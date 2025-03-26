@@ -28,7 +28,7 @@ final class HistoryInteractor: HistoryInteractorProtocol {
     }
     
     func didFetchHistory() {
-       let fetchedData = historyService.fetchHistory()
+        let fetchedData = historyService.fetchHistory()
         presenter.didFetchHistoryData(fetchedData)
     }
     
