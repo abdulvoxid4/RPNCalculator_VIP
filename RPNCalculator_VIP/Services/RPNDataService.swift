@@ -37,11 +37,28 @@ final class RPNDataService: RPNDataServiceProtocol {
     private func buttonPressed(currentInput: String, title: CB) -> String {
         
         var newCurrentInput = currentInput
-        let operators: Set<Character> = [CB.plus.char, CB.minus.char, CB.multiplyX.char, CB.divide.char]
-        let operatorsWithBrackets: Set<Character> = [CB.plus.char, CB.minus.char, CB.multiplyX.char, CB.divide.char, CB.open.char, CB.close.char]
-        let lastNumber = newCurrentInput.split(whereSeparator: { operators.contains($0) }).last ?? ""
-        let lastNumberWithoutBrackets = newCurrentInput.split(whereSeparator: { operatorsWithBrackets.contains($0) }).last ?? ""
-        let lastChar = newCurrentInput.last ?? "E"
+        let operators: Set<Character> = [CB.plus.char,
+                                         CB.minus.char,
+                                         CB.multiplyX.char,
+                                         CB.divide.char]
+        
+        let operatorsWithBrackets: Set<Character> = [
+                                         CB.plus.char,
+                                         CB.minus.char,
+                                         CB.multiplyX.char,
+                                         CB.divide.char,
+                                         CB.open.char,
+                                         CB.close.char]
+        
+        let lastNumber = newCurrentInput.split(whereSeparator: {
+            operators.contains($0)
+        }).last ?? ""
+        
+        let lastNumberWithoutBrackets = newCurrentInput.split(whereSeparator: {
+            operatorsWithBrackets.contains($0)
+        }).last ?? ""
+        
+        let lastChar = newCurrentInput.last ?? CB.zero.char
         
         if newCurrentInput == "Error" {
             newCurrentInput = ""
@@ -133,7 +150,7 @@ final class RPNDataService: RPNDataServiceProtocol {
                     if b != 0 {
                         result = a / b
                     } else {
-                        return nil
+                        return "Undefined"
                     }
                 default: return nil
                 }
