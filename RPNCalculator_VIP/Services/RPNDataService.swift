@@ -20,6 +20,9 @@ final class RPNDataService: RPNDataServiceProtocol {
     func directTo(currentInput: String, title: CalculatorButtonsEnum) -> (String, String?) {
         if title == .equal {
             isNewInput = false
+            if currentInput == "Error" || currentInput == "Undefined"{
+                return ("0","")
+            }
             let better = currentInput.removeUntilLastNumber ?? currentInput
             
             if let postfixInput = infinixToPostfix(inputValue: better) {
@@ -31,12 +34,17 @@ final class RPNDataService: RPNDataServiceProtocol {
         } else {
             return (buttonPressed(currentInput: currentInput, title: title), nil)
         }
-        return ("Error", "")
+        return ("0", "")
     }
     
     private func buttonPressed(currentInput: String, title: CB) -> String {
         
-        var newCurrentInput = currentInput
+        if currentInput == "Error" || currentInput == "Undefined"{
+            return CB.zero.rawValue
+        
+        }
+        
+        let newCurrentInput = currentInput
         let operators: Set<Character> = [CB.plus.char,
                                          CB.minus.char,
                                          CB.multiplyX.char,
@@ -59,10 +67,6 @@ final class RPNDataService: RPNDataServiceProtocol {
         }).last ?? ""
         
         let lastChar = newCurrentInput.last ?? CB.zero.char
-        
-        if newCurrentInput == "Error" || newCurrentInput == "Undifined"{
-            newCurrentInput = ""
-        }
         
         switch title {
             // Zero case
@@ -177,6 +181,14 @@ final class RPNDataService: RPNDataServiceProtocol {
                 if char.isNumber || char == "e" || char == CB.dot.char  {
                     numberBuffer.append(char)
                 } else {
+                    
+                    
+                    if (char == CB.minus.char || char == CB.plus.char) && numberBuffer.last == "e" {
+                        numberBuffer.append(char)
+                        print("test")
+                        continue
+                    }
+                    
                     if !numberBuffer.isEmpty {
                         output.push(numberBuffer)
                         numberBuffer = ""
@@ -220,7 +232,7 @@ final class RPNDataService: RPNDataServiceProtocol {
             }
             
             let result = output.allElements().joined(separator: " ")
-            //print("RPN output: \(result)")
+              print("RPN output: \(result)")
             return result
         }
     
@@ -241,9 +253,8 @@ final class RPNDataService: RPNDataServiceProtocol {
             formatted = String(format: "%.5g", doubleResult)
         }
         
-        return formatted.replacingOccurrences(of: "e-", with: "e").replacingOccurrences(of: "e+", with: "e")
+        return formatted
     }
-    
     
     
 }
@@ -322,6 +333,8 @@ extension RPNDataService {
         let beforeLastChar = String(newCurrentInput.dropLast())
         if lastChar == CB.minus.char && beforeLastChar.last == CB.open.char {
             return currentInput
+        } else if currentInput == CB.minus.rawValue {
+            return currentInput
         }
         
         if operators.contains(String(lastChar)) || lastChar == CB.dot.char ||
@@ -381,12 +394,20 @@ extension RPNDataService {
     }
     
     func backspaceHandler(newCurrentInput: String) -> String {
+        
         isNewInput = true
         var currentInput = newCurrentInput
+        
+        if currentInput == "Error" || currentInput == "Undefined"{
+            currentInput = "0"
+            return currentInput
+        
+        }
         
         if currentInput.count == 1 {
             currentInput = CB.zero.rawValue
         } else {
+            guard !currentInput.isEmpty else {return "0"}
             currentInput.removeLast()
         }
         return currentInput
