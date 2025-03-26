@@ -60,7 +60,7 @@ final class RPNDataService: RPNDataServiceProtocol {
         
         let lastChar = newCurrentInput.last ?? CB.zero.char
         
-        if newCurrentInput == "Error" {
+        if newCurrentInput == "Error" || newCurrentInput == "Undifined"{
             newCurrentInput = ""
         }
         
@@ -125,7 +125,6 @@ final class RPNDataService: RPNDataServiceProtocol {
     private func calculate(_ input: String) -> String? {
         var stack = Stack<Double>()
         let tokens = input.split(separator: " ")
-        print("Tokens: \(tokens)")
         
         for token in tokens {
             
@@ -162,68 +161,68 @@ final class RPNDataService: RPNDataServiceProtocol {
     
     // Converts infix expression to postfix (RPN)
     private func infinixToPostfix(inputValue: String) -> String? {
-        let precedence: [Character: Int] = [
-            CB.plus.char: 1,
-            CB.minus.char: 1,
-            CB.multiplyX.char: 2,
-            CB.divide.char: 2
-        ] // Prority of operator
-        
-        var output = Stack<String>()
-        var operators = Stack<Character>()
-        var numberBuffer = ""
-        
-        
-        for (index, char) in inputValue.enumerated() {
-            if char.isNumber || char == "e" || char == CB.dot.char  {
-                numberBuffer.append(char)
-            } else {
-                if !numberBuffer.isEmpty {
-                    output.push(numberBuffer)
-                    numberBuffer = ""
-                }
-                
-                if char == CB.minus.char && (index == 0 || inputValue[inputValue.index(inputValue.startIndex, offsetBy: index - 1)] == CB.open.char) {
+            let precedence: [Character: Int] = [
+                CB.plus.char: 1,
+                CB.minus.char: 1,
+                CB.multiplyX.char: 2,
+                CB.divide.char: 2
+            ] // Prority of operator
+            
+            var output = Stack<String>()
+            var operators = Stack<Character>()
+            var numberBuffer = ""
+            
+            
+            for (index, char) in inputValue.enumerated() {
+                if char.isNumber || char == "e" || char == CB.dot.char  {
                     numberBuffer.append(char)
-                    
-                } else if char == CB.open.char {
-                    operators.push(char)
-                    
-                } else if char == CB.close.char {
-                    while let lastOp = operators.peek(), lastOp != CB.open.char {
-                        if let popedOperator = operators.pop() {
-                            output.push(String(popedOperator))
-                        }
+                } else {
+                    if !numberBuffer.isEmpty {
+                        output.push(numberBuffer)
+                        numberBuffer = ""
                     }
-                    _ = operators.pop() // Remove '(' from stack
                     
-                } else if precedence[char] != nil {
-                    while let lastOp = operators.peek(),
-                          let lastPrecedence = precedence[lastOp],
-                          let currentPrecedence = precedence[char],
-                          lastPrecedence >= currentPrecedence {
+                    if char == CB.minus.char && (index == 0 || inputValue[inputValue.index(inputValue.startIndex, offsetBy: index - 1)] == CB.open.char) {
+                        numberBuffer.append(char)
                         
-                        if let poppedOperator = operators.pop() {
-                            output.push(String(poppedOperator))
+                    } else if char == CB.open.char {
+                        operators.push(char)
+                        
+                    } else if char == CB.close.char {
+                        while let lastOp = operators.peek(), lastOp != CB.open.char {
+                            if let popedOperator = operators.pop() {
+                                output.push(String(popedOperator))
+                            }
                         }
+                        _ = operators.pop() // Remove '(' from stack
+                        
+                    } else if precedence[char] != nil {
+                        while let lastOp = operators.peek(),
+                              let lastPrecedence = precedence[lastOp],
+                              let currentPrecedence = precedence[char],
+                              lastPrecedence >= currentPrecedence {
+                            
+                            if let poppedOperator = operators.pop() {
+                                output.push(String(poppedOperator))
+                            }
+                        }
+                        operators.push(char)
                     }
-                    operators.push(char)
                 }
             }
+            
+            if !numberBuffer.isEmpty {
+                output.push(numberBuffer)
+            }
+            
+            while let poppedOperator = operators.pop() {
+                output.push(String(poppedOperator))  // Pushing remaining operators to output
+            }
+            
+            let result = output.allElements().joined(separator: " ")
+            //print("RPN output: \(result)")
+            return result
         }
-        
-        if !numberBuffer.isEmpty {
-            output.push(numberBuffer)
-        }
-        
-        while let poppedOperator = operators.pop() {
-            output.push(String(poppedOperator))  // Pushing remaining operators to output
-        }
-        
-        let result = output.allElements().joined(separator: " ")
-        print("RPN output: \(result)")
-        return result
-    }
     
     private func formatResult(result: String) -> String {
         guard let doubleResult = Double(result) else {
@@ -340,6 +339,12 @@ extension RPNDataService {
     func openParenthesisHandler(newCurrentInput: String) -> String {
         isNewInput = true
         var currentInput = newCurrentInput
+        
+        if currentInput == CB.minus.rawValue {
+            currentInput = ""
+            currentInput = CB.zero.rawValue + CB.minus.rawValue + CB.open.rawValue
+            return currentInput
+        }
         
         if currentInput == CB.zero.rawValue {
             currentInput = CB.open.rawValue
